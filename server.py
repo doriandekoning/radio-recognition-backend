@@ -47,6 +47,9 @@ def classify(audio):
 
 
 def fingerprint(audio):
+    file = open('audio.webm')
+    file.write(audio)
+    file.close()
     request = requests.get(FINGERPRINTER_URL + '/fingerprint')
     if request.status_code == 200 :
         return request.json()['songname'], request.json()['confidence']
@@ -58,5 +61,3 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   return response
-
-  de
