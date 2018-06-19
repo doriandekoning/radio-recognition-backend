@@ -30,11 +30,11 @@ def analysis():
     classify(audio)
     
 
-    songname, confidence = fingerprint(audio)
+    songinfo, confidence = fingerprint(audio)
     if confidence < 0.7:
         return app.response_class(status=404)
     
-    data = {'stationname':'3fm', 'song': {'name':songname, 'artist':'IDLES'}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'song': {'name':songinfo['song_name'], 'artist':songinfo['song_artist']}, 'dj':'dorian'}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
@@ -66,7 +66,8 @@ def fingerprint(audio):
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
         os.remove('out.wav')
-        print( response.json()['song_name'], response.json()['confidence']/100.0)
+        print( response.json())
+        return {'name':response.json()['song_name'], 'artist':response.json()['song_artist']}, response.json()['confidence']
     return '', 0.8
 
 @app.after_request
