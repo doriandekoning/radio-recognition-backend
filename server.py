@@ -31,10 +31,8 @@ def analysis():
     
 
     songinfo, confidence = fingerprint(audio)
-    if confidence < 0.7:
-        return app.response_class(status=404)
     
-    data = {'stationname':'3fm', 'song': {'name':songinfo['song_name'], 'artist':songinfo['song_artist']}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'song': {'confidence':confidence, 'name':songinfo['song_name'], 'artist':songinfo['song_artist']}, 'dj':'dorian'}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
