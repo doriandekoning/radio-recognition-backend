@@ -8,7 +8,7 @@ import ffmpeg
 app = Flask(__name__)
 
 CLASSIFIER_URL = "https://741b00e5-db75-4cab-8380-0903c0299980.mock.pstmn.io"
-FINGERPRINTER_URL = 'http://mmsr-fingerprint.nl'
+FINGERPRINTER_URL = 'https://mmsr-fingerprint.nl'
 
 @app.route("/health", methods=['GET'])
 def health():
@@ -62,10 +62,11 @@ def fingerprint(audio):
     file = open('out.wav', 'rb')
     b = base64.b64encode(file.read())
     file.close()
+    os.remove('out.wav')
     body = {'extension':'wav'}#, 'file': b }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
-        os.remove('out.wav')
+        
         print( response.json()['song_name'], response.json()['confidence']/100.0)
     return '', 0.8
 
