@@ -63,7 +63,7 @@ def fingerprint(audio):
     b = base64.b64encode(file.read())
     file.close()
     body = {'extension':'wav', 'file': b }
-    response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
+    response = requests.post(FINGERPRINTER_URL + '/recognize', json=json.dumps(body))
     if response.status_code == 200 :
         os.remove('out.wav')
         print( response.json()['song_name'], response.json()['confidence']/100.0)
