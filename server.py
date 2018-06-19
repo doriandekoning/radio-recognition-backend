@@ -62,7 +62,7 @@ def fingerprint(audio):
     file = open('out.wav', 'rb')
     b = base64.b64encode(file.read())
     file.close()
-    body = {'extension':'wav', 'file': b }
+    body = {'extension':'wav', 'file': b.decode('UTF-8') }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
         os.remove('out.wav')
@@ -76,3 +76,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   
     return response
+
+
+app.run( host='10.164.0.3',port=5000,ssl_context =('/etc/letsencrypt/live/backend.mmsr-fingerprint.nl/fullchain.pem', '/etc/letsencrypt/live/backend.mmsr-fingerprint.nl/privkey.pem'))
