@@ -44,13 +44,15 @@ def analysis():
 
     
 def classify(audio):
-    request =  requests.get(CLASSIFIER_URL+ "/classify")
-    if request.status_code == 200 :
-        print(request.json())
-        if request.json()['label'] == 'speech' :
+    response =  requests.get(CLASSIFIER_URL+ "/classify")
+    if response.status_code == 200 :
+        print(response.json())
+        if response.json()['label'] == 'speech' :
             return False
-        elif request.json()['label'] == 'music' :
+        elif response.json()['label'] == 'music' :
             return True
+    else :
+        print("Something went wrong while classyifing", response)
 
 
 def fingerprint(audio):
