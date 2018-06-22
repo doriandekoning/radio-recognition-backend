@@ -9,7 +9,6 @@ app = Flask(__name__)
 
 CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl"
 FINGERPRINTER_URL = 'http://mmsr-fingerprint.nl'
-filenumber = 0
 
 @app.route("/health", methods=['GET'])
 def health():
@@ -68,6 +67,7 @@ def fingerprint(audio):
     file.close()
     body = {'extension':'wav', 'file': b.decode('UTF-8') }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
+    os.remove(filename + '.wav')
     if response.status_code == 200 :
         print( response.json())
         return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
