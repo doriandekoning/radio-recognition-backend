@@ -7,7 +7,7 @@ import os
 import ffmpeg
 app = Flask(__name__)
 
-CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl/classify"
+CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl"
 FINGERPRINTER_URL = 'http://mmsr-fingerprint.nl'
 filenumber = 0
 
