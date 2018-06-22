@@ -7,9 +7,9 @@ import os
 import ffmpeg
 app = Flask(__name__)
 
-CLASSIFIER_URL = "https://741b00e5-db75-4cab-8380-0903c0299980.mock.pstmn.io"
+CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl/classify"
 FINGERPRINTER_URL = 'http://mmsr-fingerprint.nl'
-filenumber =
+filenumber = 0
 
 @app.route("/health", methods=['GET'])
 def health():
@@ -28,7 +28,8 @@ def analysis():
 
     #Request to classifier
 
-    classify(audio)
+    
+    music =  classify(audio)
     
 
     songname, artist, confidence = fingerprint(audio)
@@ -45,6 +46,7 @@ def analysis():
 def classify(audio):
     request =  requests.get(CLASSIFIER_URL+ "/classify")
     if request.status_code == 200 :
+        print(request.json())
         if request.json()['label'] == 'speech' :
             return False
         elif request.json()['label'] == 'music' :
