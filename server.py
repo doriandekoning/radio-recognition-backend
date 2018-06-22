@@ -42,8 +42,8 @@ def analysis():
     return response
 
     
-def classify(audioWav):
-    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audioWav})
+def classify(audio):
+    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audio})
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
@@ -55,7 +55,7 @@ def classify(audioWav):
 
 
 def fingerprint(audio):
-    base64audioWav = base64.b64encode(file.read())
+    base64audioWav = base64.b64encode(audio)
     body = {'extension':'wav', 'file': base64audioWav.decode('UTF-8') }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
