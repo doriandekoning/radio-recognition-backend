@@ -42,7 +42,7 @@ def analysis():
     return response
 
     
-def classify(audio):
+def classify(audioWav):
     response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audioWav})
     if response.status_code == 200 :
         print(response.json())
