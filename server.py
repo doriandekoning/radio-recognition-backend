@@ -58,7 +58,6 @@ def fingerprint(audio):
     base64audioWav = base64.b64encode(file.read())
     body = {'extension':'wav', 'file': base64audioWav.decode('UTF-8') }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
-    os.remove(filename + '.wav')
     if response.status_code == 200 :
         print( response.json())
         return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
@@ -75,7 +74,8 @@ def convertAudioToWav(audio):
     file = open(filename + '.wav', 'rb')
     ret = file.read()
     file.close()
-    ret
+    os.remove(filename + '.wav')
+    return ret
 
 @app.after_request
 def after_request(response):
