@@ -56,7 +56,7 @@ def classify(audio):
 
 
 def fingerprint(audio):
-    filename = 'audio' + filenumber
+    filename = 'audio'
     file = open(filename +'.webm', 'wb')
     file.write(audio)
     file.close()
