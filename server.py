@@ -44,7 +44,7 @@ def analysis():
 
     
 def classify(audio):
-    response =  requests.get(CLASSIFIER_URL+ "/classify")
+    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audio})
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
