@@ -23,15 +23,15 @@ def analysis():
     base64audio = request.get_json()['audio'].split(",")[1]
     # Audio in webm opus format
     audio = base64.b64decode(base64audio)
-
+    audioWav = convertAudioToWav(audio)
 
     #Request to classifier
 
     
-    music =  classify(audio)
+    music =  classify(audioWav)
     
 
-    songname, artist, confidence = fingerprint(audio)
+    songname, artist, confidence = fingerprint(audioWav)
     
     data = {'stationname':'3fm', 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
@@ -43,7 +43,7 @@ def analysis():
 
     
 def classify(audio):
-    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audio})
+    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audioWav})
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
@@ -55,6 +55,16 @@ def classify(audio):
 
 
 def fingerprint(audio):
+    base64audioWav = base64.b64encode(file.read())
+    body = {'extension':'wav', 'file': base64audioWav.decode('UTF-8') }
+    response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
+    os.remove(filename + '.wav')
+    if response.status_code == 200 :
+        print( response.json())
+        return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
+    return '', 0.8
+
+def convertAudioToWav(audio):
     filename = 'audio'
     file = open(filename +'.webm', 'wb')
     file.write(audio)
@@ -63,15 +73,9 @@ def fingerprint(audio):
     stream = ffmpeg.output(stream,  filename + '.wav', ac=1, acodec='pcm_s16le')
     ffmpeg.run(stream)
     file = open(filename + '.wav', 'rb')
-    b = base64.b64encode(file.read())
+    ret = file.read()
     file.close()
-    body = {'extension':'wav', 'file': b.decode('UTF-8') }
-    response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
-    os.remove(filename + '.wav')
-    if response.status_code == 200 :
-        print( response.json())
-        return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
-    return '', 0.8
+    ret
 
 @app.after_request
 def after_request(response):
