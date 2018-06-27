@@ -43,7 +43,12 @@ def analysis():
 
     
 def classify(audio):
-    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": audio})
+    filename = 'audio'
+    file = open(filename + '.wav', 'rb')
+    fil = file.read()
+    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": fil})
+    file.close()
+    os.remove(filename + '.wav')
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
@@ -51,7 +56,7 @@ def classify(audio):
         elif response.json()['label'] == 'music' :
             return True
     else :
-        print("Something went wrong when classifying")
+        print("Something went wrong when classifying", response.status_code)
 
 def fingerprint(audio):
     base64audioWav = base64.b64encode(audio)
@@ -73,7 +78,9 @@ def convertAudioToWav(audio):
     file = open(filename + '.wav', 'rb')
     ret = file.read()
     file.close()
-    os.remove(filename + '.wav')
+    file = open(filename + '.wav', 'rb')
+    ret = file.read()
+    file.close()
     return ret
 
 @app.after_request
