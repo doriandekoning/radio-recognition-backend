@@ -28,12 +28,12 @@ def analysis():
     #Request to classifier
 
     
-    music =  classify(audioWav)
+    music, confidence =  classify(audioWav)
     
 
     songname, artist, confidence = fingerprint(audioWav)
     
-    data = {'stationname':'3fm', 'music': music, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': confidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
@@ -43,18 +43,14 @@ def analysis():
 
     
 def classify(audio):
-    filename = 'audio'
-    file = open(filename + '.wav', 'rb')
-    fil = file.read()
-    response =  requests.post(CLASSIFIER_URL+ "/classify", {"audio.wav": fil})
-    file.close()
+    response =  requests.post(CLASSIFIER_URL+ "/classify", files = {"audio.wav": 'audio.wav'})
     os.remove(filename + '.wav')
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
-            return False
+            return False, reponse.json()['confidence']
         elif response.json()['label'] == 'music' :
-            return True
+            return True, response.json()['confidence']
     else :
         print("Something went wrong when classifying", response.status_code)
 
