@@ -28,12 +28,12 @@ def analysis():
     #Request to classifier
 
     
-    music, confidence =  classify(audioWav)
+    music, classificationConfidence =  classify(audioWav)
     
 
     songname, artist, confidence = fingerprint(audioWav)
     
-    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': confidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
