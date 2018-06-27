@@ -43,7 +43,7 @@ def analysis():
 
     
 def classify(audio):
-     response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": ("audio.wav", open("audio.wav", "rb"), "audio/wav")})
+    response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": ("audio.wav", open("audio.wav", "rb"), "audio/wav")})
     os.remove(filename + '.wav')
     if response.status_code == 200 :
         print(response.json())
