@@ -48,7 +48,7 @@ def classify(audio):
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
-            return False, reponse.json()['confidence']
+            return False, response.json()['confidence']
         elif response.json()['label'] == 'music' :
             return True, response.json()['confidence']
     else :
