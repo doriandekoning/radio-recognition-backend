@@ -5,6 +5,7 @@ import requests
 import base64
 import os
 import ffmpeg
+import tempfile
 app = Flask(__name__)
 
 CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl"
@@ -23,13 +24,17 @@ def analysis():
     base64audio = request.get_json()['audio'].split(",")[1]
     # Audio in webm opus format
     audio = base64.b64decode(base64audio)
-    audioWav = convertAudioToWav(audio)
+    audioFile = convertAudioToWav(audio)
 
     #Request to classifier
 
     
-    music, classificationConfidence =  classify(audioWav)
-    
+    music, classificationConfidence =  classify(audioFile)
+    os.remove(audioFile)
+
+    file = open(audioFile, 'rb')
+    audioWav = file.read()
+    file.close()
 
     songname, artist, confidence = fingerprint(audioWav)
     
@@ -43,8 +48,7 @@ def analysis():
 
     
 def classify(audio):
-    response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": ("audio.wav", open("audio.wav", "rb"), "audio/wav")})
-    os.remove('audio.wav')
+    response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": (audio, open(audio, "rb"), "audio/wav")})
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
@@ -64,20 +68,14 @@ def fingerprint(audio):
     return '', 0.8
 
 def convertAudioToWav(audio):
-    filename = 'audio'
+    filename = next(tempfile._get_candidate_names())
     file = open(filename +'.webm', 'wb')
     file.write(audio)
     file.close()
     stream  = ffmpeg.input(filename +'.webm')
     stream = ffmpeg.output(stream,  filename + '.wav', ac=1, acodec='pcm_s16le')
     ffmpeg.run(stream)
-    file = open(filename + '.wav', 'rb')
-    ret = file.read()
-    file.close()
-    file = open(filename + '.wav', 'rb')
-    ret = file.read()
-    file.close()
-    return ret
+    return filename + '.wav'
 
 @app.after_request
 def after_request(response):
