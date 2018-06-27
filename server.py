@@ -30,11 +30,11 @@ def analysis():
 
     
     music, classificationConfidence =  classify(audioFile)
-    os.remove(audioFile)
 
     file = open(audioFile, 'rb')
     audioWav = file.read()
     file.close()
+    os.remove(audioFile)
 
     songname, artist, confidence = fingerprint(audioWav)
     
