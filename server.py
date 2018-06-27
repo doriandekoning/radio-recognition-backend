@@ -33,7 +33,7 @@ def analysis():
 
     songname, artist, confidence = fingerprint(audioWav)
     
-    data = {'stationname':'3fm', 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'music': music, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
@@ -51,8 +51,7 @@ def classify(audio):
         elif response.json()['label'] == 'music' :
             return True
     else :
-        print("Something went wrong while classyifing", response)
-
+        print("Something went wrong when classifying")
 
 def fingerprint(audio):
     base64audioWav = base64.b64encode(audio)
