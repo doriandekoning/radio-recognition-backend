@@ -24,7 +24,7 @@ def analysis():
     base64audio = request.get_json()['audio'].split(",")[1]
     # Audio in webm opus format
     audio = base64.b64decode(base64audio)
-    audioFile = convertAudioToWav(audio)
+    audioFile = convertAudioToMp3(audio)
 
     #Request to classifier
 
@@ -32,11 +32,11 @@ def analysis():
     music, classificationConfidence =  classify(audioFile)
 
     file = open(audioFile, 'rb')
-    audioWav = file.read()
+    audioMp3 = file.read()
     file.close()
     os.remove(audioFile)
 
-    songname, artist, confidence = fingerprint(audioWav)
+    songname, artist, confidence = fingerprint(audioMp3)
     
     data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
@@ -48,7 +48,7 @@ def analysis():
 
     
 def classify(audio):
-    response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": (audio, open(audio, "rb"), "audio/wav")})
+    response =  requests.post(CLASSIFIER_URL+ "/classify", files ={"file": (audio, open(audio, "rb"), "audio/mpeg")})
     if response.status_code == 200 :
         print(response.json())
         if response.json()['label'] == 'speech' :
@@ -59,23 +59,23 @@ def classify(audio):
         print("Something went wrong when classifying", response.status_code)
 
 def fingerprint(audio):
-    base64audioWav = base64.b64encode(audio)
-    body = {'extension':'wav', 'file': base64audioWav.decode('UTF-8') }
+    base64audio = base64.b64encode(audio)
+    body = {'extension':'mp3', 'file': base64audio.decode('UTF-8') }
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
         print( response.json())
         return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
     return '', 0.8
 
-def convertAudioToWav(audio):
+def convertAudioToMp3(audio):
     filename = next(tempfile._get_candidate_names())
     file = open(filename +'.webm', 'wb')
     file.write(audio)
     file.close()
     stream  = ffmpeg.input(filename +'.webm')
-    stream = ffmpeg.output(stream,  filename + '.wav', ac=1, acodec='pcm_s16le')
+    stream = ffmpeg.output(stream,  filename + '.mp3', ac=2, acodec='libmp3lame')
     ffmpeg.run(stream)
-    return filename + '.wav'
+    return filename + '.mp3'
 
 @app.after_request
 def after_request(response):
