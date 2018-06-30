@@ -90,15 +90,10 @@ def concatAudio(files):
         file.close()
         os.remove(files[0])
         return out
-    # streams = []
-    # for x in files:
-    #     streams.append(ffmpeg.input(x)['a'])
-    # concated = ffmpeg.concat(*streams).node
     outfile = next(tempfile._get_candidate_names())
     cmd = 'ffmpeg -i concat:"'
     for f in files :
         cmd = cmd + f + '|'
-    # ffmpeg.output(concated, outfile + '.mp3')
     cmd = cmd[:-1]
     cmd = cmd + '" -acodec copy '+  outfile + '.mp3'
     os.system(cmd)
