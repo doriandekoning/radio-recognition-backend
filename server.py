@@ -22,16 +22,28 @@ def analysis():
     # Fix base64 paddinggi
     #Remove base64 "header"
     base64audio = request.get_json()['audio']
-    musicfiles = []
+    files = []
+    classifications = []
     for x in base64audio:
         # Audio in webm opus format
         audio = base64.b64decode(x.split(",")[1])
         mp3 =  convertAudioToMp3(audio)
+        files.append(mp3)
         music, classificationConfidence =  classify(mp3)
         if music  and classificationConfidence > 0.2 :
-            musicfiles.append(mp3)
+            classifications.append(True)
         else:
-            os.remove(mp3)
+            classifications.append(False)
+
+    #find first and last speech fragemnt
+    firstMusic = len(classifications)
+    lastMusic = 0
+    for index, classification in classifications:
+        if index < firstMusic and classification:
+            firstMusic = index
+        if index > lastMusic and classification:
+            lastMusic = index
+    musicfiles = files[firstMusic:(lastMusic+1)]
     if len(musicfiles) == 0:
         return app.response_class(
             status=400,
@@ -42,6 +54,9 @@ def analysis():
     
 
     songname, artist, confidence = fingerprint(concatedAudio)
+
+    for file in files:
+        os.remove(file)
     
     data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
@@ -88,7 +103,6 @@ def concatAudio(files):
         file = open(files[0], 'rb')
         out = file.read()
         file.close()
-        os.remove(files[0])
         return out
     outfile = next(tempfile._get_candidate_names())
     cmd = 'ffmpeg -i concat:"'
