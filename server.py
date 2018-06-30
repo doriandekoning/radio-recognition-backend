@@ -38,7 +38,7 @@ def analysis():
     #find first and last speech fragemnt
     firstMusic = len(classifications)
     lastMusic = 0
-    for index, classification in classifications:
+    for index, classification in enumerate(classifications):
         if index < firstMusic and classification:
             firstMusic = index
         if index > lastMusic and classification:
