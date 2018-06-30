@@ -63,7 +63,7 @@ def analysis():
     for file in files:
         os.remove(file)
     
-    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'station': station}
+    data = {'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'stationname': station}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
