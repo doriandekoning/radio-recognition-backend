@@ -39,7 +39,7 @@ def analysis():
         )
     #Request to classifier
 
-    concatedAudio = concataAudio(musicfiles)
+    concatedAudio = concatAudio(musicfiles)
     
 
     songname, artist, confidence = fingerprint(concatedAudio)
