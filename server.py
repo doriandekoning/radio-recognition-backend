@@ -90,7 +90,7 @@ def fingerprint(audio):
     if response.status_code == 200 :
         print( response.json())
         return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence'], response.json()['song_id']
-    return 'Niet herkent', 0
+    return 'Not found', 0
 
 def getStation(audioId, timestamp):
     params = {'songid': audioId, 'timestamp': timestamp}
@@ -98,7 +98,7 @@ def getStation(audioId, timestamp):
     if response.status_code == 200:
         print(response.json())
         return response.json()['station']
-    return 'Niet herkent'
+    return 'Not found'
 
 def convertAudioToMp3(audio):
     filename = next(tempfile._get_candidate_names())
