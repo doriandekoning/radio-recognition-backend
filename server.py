@@ -75,6 +75,7 @@ def convertAudioToMp3(audio):
     stream  = ffmpeg.input(filename +'.webm')
     stream = ffmpeg.output(stream,  filename + '.mp3', ac=2, acodec='libmp3lame')
     ffmpeg.run(stream)
+    os.remove(filename + '.webm')
     return filename + '.mp3'
 
 @app.after_request
