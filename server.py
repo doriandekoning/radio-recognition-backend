@@ -86,7 +86,11 @@ def convertAudioToMp3(audio):
 
 def concatAudio(files):
     if len(files) == 1 :
-        return files[0]
+        file = open(files[0] + '.mp3', 'rb')
+        out = file.read()
+        file.close()
+        os.remove(outfile + '.mp3')
+        return out
     streams = []
     for x in files:
         streams.append(x.map(lambda x: ffmpeg.input(x)))
@@ -96,6 +100,7 @@ def concatAudio(files):
     file = open(outfile + '.mp3', 'rb')
     out = file.read()
     print(type(file))
+    file.close()
     os.remove(outfile + '.mp3')
     return out
 
