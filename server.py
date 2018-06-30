@@ -99,6 +99,7 @@ def concatAudio(files):
     for f in files :
         cmd = cmd + f + '|'
     # ffmpeg.output(concated, outfile + '.mp3')
+    cmd = cmd[:-1]
     cmd = cmd + '" -acodec copy '+  outfile + '.mp3'
     os.system(cmd)
     file = open(outfile + '.mp3', 'rb')
