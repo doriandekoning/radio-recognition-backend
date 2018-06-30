@@ -28,7 +28,6 @@ def analysis():
         audio = base64.b64decode(x.split(",")[1])
         mp3 =  convertAudioToMp3(audio)
         music, classificationConfidence =  classify(mp3)
-        print("FUCK YOU", music, classificationConfidence)
         if music  and classificationConfidence > 0.2 :
             musicfiles.append(mp3)
         else:
@@ -99,7 +98,6 @@ def concatAudio(files):
     ffmpeg.output(concated, outfile)
     file = open(outfile, 'rb')
     out = file.read()
-    print(type(file))
     file.close()
     os.remove(outfile)
     return out
