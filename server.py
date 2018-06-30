@@ -28,6 +28,7 @@ def analysis():
         audio = base64.b64decode(x.split(",")[1])
         mp3 =  convertAudioToMp3(audio)
         music, classificationConfidence =  classify(mp3)
+        print("FUCK YOU", music, classificationConfidence)
         if music == 'music' and classificationConfidence > 0.2 :
             musicfiles.append(mp3)
         else:
