@@ -95,7 +95,7 @@ def fingerprint(audio):
 def getStation(audioId, timestamp):
     params = {'songid': audioId, 'timestamp': timestamp}
     response = requests.get(LISTENER_URL + '/lastplayed', params=params)
-    if response.status_code = 200:
+    if response.status_code == 200:
         print(response.json())
         return response.json()['station']
     return 'Niet herkent'
