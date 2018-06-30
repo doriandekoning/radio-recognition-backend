@@ -21,7 +21,7 @@ def analysis():
 
     # Fix base64 padding
     #Remove base64 "header"
-    base64audio = request.get_json()['audio'].split(",")[1]
+    base64audio = request.get_json()['audio'][0].split(",")[1]
     # Audio in webm opus format
     audio = base64.b64decode(base64audio)
     audioFile = convertAudioToMp3(audio)
@@ -73,7 +73,7 @@ def convertAudioToMp3(audio):
     file.write(audio)
     file.close()
     stream  = ffmpeg.input(filename +'.webm')
-    stream = ffmpeg.output(stream,  filename + '.mp3', ar=44100 ac=2, acodec='libmp3lame')
+    stream = ffmpeg.output(stream,  filename + '.mp3', ar=44100, ac=2, acodec='libmp3lame')
     ffmpeg.run(stream)
     os.remove(filename + '.webm')
     return filename + '.mp3'
