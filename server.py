@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl"
 FINGERPRINTER_URL = 'http://mmsr-fingerprint.nl'
+LISTENER_URL = 'http://ec2-35-177-142-96.eu-west-2.compute.amazonaws.com'
 
 @app.route("/health", methods=['GET'])
 def health():
@@ -53,12 +54,16 @@ def analysis():
     concatedAudio = concatAudio(musicfiles)
     
 
-    songname, artist, confidence = fingerprint(concatedAudio)
+    songname, artist, confidence, songID = fingerprint(concatedAudio)
+
+    station = getStation(songID, request.get_json()['timestamp'])
+
+
 
     for file in files:
         os.remove(file)
     
-    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
+    data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'station': station}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
@@ -84,8 +89,16 @@ def fingerprint(audio):
     response = requests.post(FINGERPRINTER_URL + '/recognize', json=body)
     if response.status_code == 200 :
         print( response.json())
-        return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence']
-    return '', 0.8
+        return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence'], response.json()['song_id']
+    return 'Niet herkent', 0
+
+def getStation(audioId, timestamp):
+    params = {'songid': audioId, 'timestamp': timestamp}
+    response = requests.get(LISTENER_URL + '/lastplayed', params=params)
+    if response.status_code = 200:
+        print(response.json())
+        return response.json()['station']
+    return 'Niet herkent'
 
 def convertAudioToMp3(audio):
     filename = next(tempfile._get_candidate_names())
