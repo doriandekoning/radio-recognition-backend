@@ -98,7 +98,7 @@ def concatAudio(files):
     cmd = 'ffmpeg -f concat '
     for f in files :
         cmd = cmd + ' -i '+ f
-    ffmpeg.output(concated, outfile + '.mp3')
+    # ffmpeg.output(concated, outfile + '.mp3')
     cmd = cmd + ' -c copy outfile.mp3'
     os.system(cmd)
     file = open(outfile + '.mp3', 'rb')
