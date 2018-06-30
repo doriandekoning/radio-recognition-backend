@@ -29,7 +29,7 @@ def analysis():
         mp3 =  convertAudioToMp3(audio)
         music, classificationConfidence =  classify(mp3)
         print("FUCK YOU", music, classificationConfidence)
-        if music == 'music' and classificationConfidence > 0.2 :
+        if music  and classificationConfidence > 0.2 :
             musicfiles.append(mp3)
         else:
             os.remove(mp3)
