@@ -93,7 +93,7 @@ def concatAudio(files):
         return out
     streams = []
     for x in files:
-        streams.append(x.map(lambda x: ffmpeg.input(x)))
+        streams.append(ffmpeg.input(x))
     concated = ffmpeg.concat(streams)
     outfile = next(tempfile._get_candidate_names())
     ffmpeg.output(concated, outfile + '.mp3')
