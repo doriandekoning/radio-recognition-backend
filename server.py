@@ -19,24 +19,29 @@ def health():
 @app.route("/analysis", methods=['POST'])
 def analysis():
 
-    # Fix base64 padding
+    # Fix base64 paddinggi
     #Remove base64 "header"
-    base64audio = request.get_json()['audio'][0].split(",")[1]
-    # Audio in webm opus format
-    audio = base64.b64decode(base64audio)
-    audioFile = convertAudioToMp3(audio)
-
+    base64audio = request.get_json()['audio']
+    musicfiles = []
+    for x in base64audio:
+        # Audio in webm opus format
+        audio = base64.b64decode(x.split(",")[1])
+        mp3 =  convertAudioToMp3(audio)
+        music, classificationConfidence =  classify(mp3)
+        if music == 'music' and classificationConfidence > 0.2 :
+            musicfiles.append(mp3)
+        else:
+            os.remove(mp3)
+    if len(musicfiles) == 0:
+        return app.response_class(
+            status=400,
+        )
     #Request to classifier
 
+    concatedAudio = concataAudio(musicfiles)
     
-    music, classificationConfidence =  classify(audioFile)
 
-    file = open(audioFile, 'rb')
-    audioMp3 = file.read()
-    file.close()
-    os.remove(audioFile)
-
-    songname, artist, confidence = fingerprint(audioMp3)
+    songname, artist, confidence = fingerprint(concatedAudio)
     
     data = {'stationname':'3fm', 'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'dj':'dorian'}
     response = app.response_class(
@@ -77,6 +82,24 @@ def convertAudioToMp3(audio):
     ffmpeg.run(stream)
     os.remove(filename + '.webm')
     return filename + '.mp3'
+
+def concatAudio(files):
+    if len(files) == 1 :
+        return files[0]
+    streams = []
+    for x in files:
+        streams.append(ffmpeg.input(x))
+    concated = ffmpeg.concat(streams)
+    outfile = next(tempfile._get_candidate_names())
+    ffmpeg.output(concated, outfile + '.mp3')
+    file = open(outfile + '.mp3', 'rb')
+    out = file.read()
+    os.remove(outfile + '.mp3')
+    return out
+
+
+
+    
 
 @app.after_request
 def after_request(response):
