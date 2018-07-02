@@ -64,8 +64,9 @@ def analysis():
     
 
     songname, artist, confidence, songID = fingerprint(concatedAudio)
-
-    station = getStation(songID, request.get_json()['timestamp'])
+    station = ""
+    if songID != "": 
+        station = getStation(songID, request.get_json()['timestamp'])
 
 
 
@@ -99,7 +100,7 @@ def fingerprint(audio):
     if response.status_code == 200 :
         print( response.json())
         return response.json()['song_name'], response.json()['song_artist'], response.json()['confidence'], response.json()['song_id']
-    return 'Not found', 0
+    return 'Not found', "Not found" , "0", ""
 
 def getStation(audioId, timestamp):
     params = {'songid': audioId, 'timestamp': timestamp}
