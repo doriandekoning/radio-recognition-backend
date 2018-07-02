@@ -26,16 +26,19 @@ def analysis():
     base64audio = request.get_json()['audio']
     files = []
     classifications = []
+    totalConfidence = 0
     for x in base64audio:
         # Audio in webm opus format
         audio = base64.b64decode(x.split(",")[1])
         mp3 =  convertAudioToMp3(audio)
         files.append(mp3)
         music, classificationConfidence =  classify(mp3)
-        if music  and classificationConfidence > 0.2 :
+        if music  :
             classifications.append(True)
+            totalConfidence = totalConfidence + classificationConfidence
         else:
             classifications.append(False)
+            totalConfidence = totalConfidence +  (1 -classificationConfidence)
 
     #find first and last speech fragemnt
     firstMusic = len(classifications)
@@ -47,7 +50,7 @@ def analysis():
             lastMusic = index
     musicfiles = files[firstMusic:(lastMusic+1)]
     if len(musicfiles) == 0:
-        resp = {'classification': {'music':False}}
+        resp = {'classification': {'music':False, 'confidence':  (len(base64audio) - totalConfidence)/len(base64audio) }}
         for file in files:
             os.remove(file)
         return app.response_class(
@@ -69,7 +72,7 @@ def analysis():
     for file in files:
         os.remove(file)
     
-    data = {'classification': {'music': True}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'stationname': station}
+    data = {'classification': {'music': True, 'confidence': totalConfidence / len(base64audio)}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'stationname': station}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
