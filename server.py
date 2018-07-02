@@ -47,6 +47,8 @@ def analysis():
     musicfiles = files[firstMusic:(lastMusic+1)]
     if len(musicfiles) == 0:
         resp = {'classification': {'music':False}}
+        for file in files:
+            os.remove(file)
         return app.response_class(
             status=200,
             mimetype='application/json',
