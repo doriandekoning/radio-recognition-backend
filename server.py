@@ -46,8 +46,11 @@ def analysis():
             lastMusic = index
     musicfiles = files[firstMusic:(lastMusic+1)]
     if len(musicfiles) == 0:
+        resp = {'classification': {'music':False}}
         return app.response_class(
-            status=400,
+            status=200,
+            mimetype='application/json',
+            response= json.dumps(resp)
         )
     #Request to classifier
 
@@ -63,7 +66,7 @@ def analysis():
     for file in files:
         os.remove(file)
     
-    data = {'classification': {'music': music, 'confidence': classificationConfidence}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'stationname': station}
+    data = {'classification': {'music': True}, 'song': {'confidence':confidence, 'name': songname, 'artist':artist}, 'stationname': station}
     response = app.response_class(
         response =json.dumps(data),
         status=200, 
