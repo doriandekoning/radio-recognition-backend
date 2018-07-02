@@ -6,6 +6,7 @@ import base64
 import os
 import ffmpeg
 import tempfile
+from sys import argv
 app = Flask(__name__)
 
 CLASSIFIER_URL = "http://classifier.mmsr-fingerprint.nl"
@@ -148,4 +149,10 @@ def after_request(response):
     return response
 
 
-app.run( host='10.164.0.3',port=5000,ssl_context =('/etc/letsencrypt/live/backend.mmsr-fingerprint.nl/fullchain.pem', '/etc/letsencrypt/live/backend.mmsr-fingerprint.nl/privkey.pem'))
+
+#Run with ssl 
+if len(argv) >= 3 :
+    script, fullchain, privkey = argv
+    app.run( host='0.0.0.0',port=5000,ssl_context =(fullchain, privkey))
+else:
+    app.run( host='0.0.0.0',port=5000)
