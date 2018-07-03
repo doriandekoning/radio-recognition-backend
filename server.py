@@ -33,7 +33,7 @@ def analysis():
         mp3 =  convertAudioToMp3(audio)
         files.append(mp3)
         music, classificationConfidence =  classify(mp3)
-        if music  :
+        if music :
             classifications.append(True)
             totalConfidence = totalConfidence + classificationConfidence
         else:
@@ -92,6 +92,7 @@ def classify(audio):
             return True, response.json()['confidence']
     else :
         print("Something went wrong when classifying", response.status_code)
+        return False, 0.0
 
 def fingerprint(audio):
     base64audio = base64.b64encode(audio)
